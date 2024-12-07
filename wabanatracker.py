@@ -112,7 +112,7 @@ st.sidebar.info(
     - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute.  
     - This is a general guide. Please check the marine forecast below and the NL ferry schedule for updates or changes.
     
-    **This is a personal project.** It may contain errors. I aim to develop it further for accuracy and usefulness.
+    **This is a personal project.** It may contain errors. I may develop it further for accuracy, readability, etc.
     """
 )
 
