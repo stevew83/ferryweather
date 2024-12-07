@@ -100,6 +100,29 @@ newfoundland_tz = pytz.timezone("America/St_Johns")
 current_datetime = datetime.now(newfoundland_tz)
 st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y %I:%M %p')}")
 
+# Add About and Links section to the sidebar
+st.sidebar.title("About")
+st.sidebar.info(
+    """
+    **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
+    to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route.
+    
+    **Disclaimer:**
+    - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute.  
+    - This is a general guide. Please check the marine forecast below and the NL ferry schedule for updates or changes.
+    
+    **This is a personal project.** It may contain errors. I aim to develop it further for accuracy and usefulness.
+    """
+)
+
+# Add Useful Links to the sidebar
+st.sidebar.title("Useful Links")
+st.sidebar.markdown("[Marine Forecast - Atlantic Newfoundland](https://weather.gc.ca/marine/region_e.html?mapID=15)")
+st.sidebar.markdown("[511NL - Ferry Updates](https://www.511nl.ca/)")
+st.sidebar.markdown("[NL Ferry Schedule](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
+st.sidebar.markdown("[Bell Island Ferry Facebook Group](https://www.facebook.com/groups/232199710220394)")
+
+
 # Dropdown for day selection
 days = [(current_datetime + timedelta(days=i)).strftime("%A, %b %d") for i in range(7)]
 selected_day = st.selectbox("Select a day:", days)
