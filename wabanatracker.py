@@ -5,9 +5,8 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from '.env'
-load_dotenv(".env")
-API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
+# Load api key from streamlit
+API_KEY = st.secrets["api_keys"]["visual_crossing_api_key"]
 
 if not API_KEY:
     st.error("API key not found. Please ensure it's set in the '.env' file.")
