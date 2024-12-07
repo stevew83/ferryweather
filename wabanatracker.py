@@ -2,14 +2,12 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import os
 
 # Load api key from streamlit
 API_KEY = st.secrets["api_keys"]["visual_crossing_api_key"]
 
 if not API_KEY:
-    st.error("API key not found. Please ensure it's set in the '.env' file.")
+    st.error("API key not found. Please ensure it's set in Streamlit's settings.")
     st.stop()
 
 # API Configuration
