@@ -118,8 +118,8 @@ st.sidebar.info(
 
 # Add Useful Links to the sidebar
 st.sidebar.title("Useful Links")
-st.sidebar.markdown("[Marine Forecast - Atlantic Newfoundland](https://weather.gc.ca/marine/region_e.html?mapID=15)")
-st.sidebar.markdown("[511NL - Ferry Updates](https://511nl.ca/list/ferryterminalsforlist)")
+st.sidebar.markdown("[Marine Forecast - Strait of Belle Isle](https://weather.gc.ca/marine/forecast_e.html?mapID=14&siteID=16100)")
+st.sidebar.markdown("[511NL - Ferry Updates](https://511nl.ca/list/ferryterminalsforlist) Info about delays and cancellations")
 st.sidebar.markdown("[NL Ferry Schedule](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
 st.sidebar.markdown("[Bell Island Ferry Facebook Group](https://www.facebook.com/groups/232199710220394)")
 
