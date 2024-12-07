@@ -2,11 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
-import pytz
-
-# Get current time in Newfoundland Time (GMT-3:30)
-newfoundland_tz = pytz.timezone("America/St_Johns")
-current_time = datetime.now(newfoundland_tz)
 
 # Load api key from streamlit
 API_KEY = st.secrets["api_keys"]["visual_crossing_api_key"]
@@ -97,8 +92,9 @@ def display_wind_message(weather_data, day_label):
 
 
 
-# Display current date and time
-st.write(f"**Current Date and Time (Newfoundland Time):** {current_time.strftime('%A, %b %d, %Y %I:%M %p')}")
+# Current date and time
+current_datetime = datetime.now()
+st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y %I:%M %p')}")
 
 # Dropdown for day selection
 days = [(current_datetime + timedelta(days=i)).strftime("%A, %b %d") for i in range(7)]
