@@ -105,7 +105,8 @@ st.sidebar.title("About")
 st.sidebar.info(
     """
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
-    to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route.
+    to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route. Select a Day and Location
+    and the weather data will update for each scheduled departure. The app contains weather for 7 days.
     
     **Disclaimer:**
     - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute.  
