@@ -1,5 +1,7 @@
 I'm creating this app to show ferry departure times and weather forecast for those departure times in a single location.
 
+my python code is connected to a csv file which contains ferry schedule data.  If the ferry schedule changes, the csv will need to be updated. I'll try to update as needed.
+
  **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
     to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route. Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
