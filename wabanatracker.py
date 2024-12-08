@@ -154,7 +154,7 @@ if selected_dock:
         weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
         
         if weather_data:
-            st.header(f"Schedule and Weather for {selected_day} at {selected_dock}")
+            st.header(f"Ferry Departure Schedule and Weather for {selected_day} at {selected_dock}")
             display_wind_message(weather_data, selected_day)
 
             # Display all scheduled times with weather
