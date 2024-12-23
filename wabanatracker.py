@@ -105,7 +105,7 @@ st.sidebar.title("About")
 st.sidebar.info(
     """
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
-    to provide weather forecasts for each ferry departure on the 5KM Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
+    to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
     
     Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
