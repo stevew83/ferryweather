@@ -105,7 +105,7 @@ st.sidebar.title("About")
 st.sidebar.info(
     """
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
-    to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route. Select a Day and Location
+    to provide weather forecasts for each ferry departure on the Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
     
     **Disclaimer:**
@@ -120,7 +120,7 @@ st.sidebar.info(
 st.sidebar.title("Useful Links")
 st.sidebar.markdown("[Marine Forecast - Belle Isle Bank](https://weather.gc.ca/marine/forecast_e.html?mapID=14&siteID=01400)")
 st.sidebar.markdown("[511NL - Ferry Updates](https://511nl.ca/list/ferryterminalsforlist) Info about delays and cancellations")
-st.sidebar.markdown("[NL Ferry Schedule](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
+st.sidebar.markdown("[Bell Island - Portugal Cove Ferry Schedules](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
 st.sidebar.markdown("[Bell Island Ferry Facebook Group](https://www.facebook.com/groups/232199710220394)")
 
 
