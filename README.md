@@ -1,3 +1,6 @@
+The application is deployed at https://ferryweather.streamlit.app
+It may be sleeping due to inactivity.
+
 I created this app to show ferry departure times and weather forecast for those departure times in a single location.
 
 The python code is connected to a csv file which contains ferry schedule data.  If the ferry schedule changes, I will add a new csv and connect to that instead.
