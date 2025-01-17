@@ -178,11 +178,3 @@ if selected_dock:
                         )
                         break
 
-# Embed the MarineTraffic map using an iframe
-st.components.v1.html(
-    """
-    <iframe src="https://www.marinetraffic.com/en/ais/home/centerx:-52.885/centery:47.623/zoom:13" 
-    width="100%" height="600" frameborder="0"></iframe>
-    """,
-    height=600,
-)
