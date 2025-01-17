@@ -178,4 +178,12 @@ if selected_dock:
                         )
                         break
 
+# Path to the HTML file in the static folder
+html_file_path = os.path.join("static", "ferrymap.html")
 
+# Read the embed HTML file
+with open(html_file_path, "r") as f:
+    html_content = f.read()
+
+# Embed the HTML content in the Streamlit app
+st.components.v1.html(html_content, height=600)
