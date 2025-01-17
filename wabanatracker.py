@@ -23,7 +23,7 @@ LOCATIONS = {
 # Load schedule from CSV using Pandas
 try:
     schedule_df = pd.read_csv("beaumont-flanders_winter2024.csv")
-    st.write("Loaded file: beaumont-flanders_winter2024.csv")
+    st.write("Current schedule: beaumont-flanders 2025")
 except FileNotFoundError:
     st.error("CSV file 'beaumont-flanders_winter2024.csv' not found.")
     st.stop()
@@ -101,7 +101,7 @@ newfoundland_tz = pytz.timezone("America/St_Johns")
 
 # Current date and time in Newfoundland timezone
 current_datetime = datetime.now(newfoundland_tz)
-st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y %I:%M %p')}; Current Schedule: Flanders-Beaumont Hamel 2 Vessel in effect January 17, 2025")
+st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y %I:%M %p')}")
 
 # Add About and Links section to the sidebar
 st.sidebar.title("About")
