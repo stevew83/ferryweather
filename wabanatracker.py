@@ -179,13 +179,4 @@ if selected_dock:
                         )
                         break
 
-st.write("Current working directory:", os.getcwd())
 
-# Check if the file exists
-html_file_path = os.path.join(os.getcwd(), "static", "ferrymap.html")
-if os.path.exists(html_file_path):
-    with open(html_file_path, "r") as f:
-        html_content = f.read()
-    st.components.v1.html(html_content, height=600)
-else:
-    st.error(f"File not found: {html_file_path}")
