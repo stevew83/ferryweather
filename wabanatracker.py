@@ -24,7 +24,7 @@ LOCATIONS = {
 try:
     schedule_df = pd.read_csv("beaumont-flanders_winter2024.csv")
 except FileNotFoundError:
-    st.error("CSV file not found. Ensure 'ferry_schedule.csv' is in the same directory.")
+    st.error("CSV file not found. Ensure 'beaumont-flanders_winter2024.csv' is in the same directory.")
     st.stop()
 
 def fetch_weather(location, date_str):
