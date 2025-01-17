@@ -178,3 +178,9 @@ if selected_dock:
                         )
                         break
 
+# Read the embed HTML file that contains your map's specific embed code
+with open("ferrymap.html", "r") as f:
+    html_content = f.read()
+
+# Embed the HTML content into the Streamlit app
+st.components.v1.html(html_content, height=600)
