@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from datetime import datetime, timedelta
 import pytz
+import os
 
 # Load api key from streamlit
 API_KEY = st.secrets["api_keys"]["visual_crossing_api_key"]
