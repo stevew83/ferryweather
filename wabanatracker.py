@@ -127,7 +127,7 @@ st.sidebar.markdown("[Marine Forecast - East Coast](https://www.weather.gc.ca/ma
 st.sidebar.markdown("[511NL - Ferry Updates](https://511nl.ca/list/ferryterminalsforlist) Info about delays and cancellations")
 st.sidebar.markdown("[Bell Island - Portugal Cove Schedules](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
 st.sidebar.markdown("[Bell Island Ferry Facebook Group](https://www.facebook.com/groups/232199710220394)")
-
+st.sidebar.markdown("[NTV Live camera - Bell Island side (view lineup)](https://ntvplus.ca/pages/webcam-stphilips-bellisland)")
 
 # Dropdown for day selection
 days = [(current_datetime + timedelta(days=i)).strftime("%A, %b %d") for i in range(7)]
