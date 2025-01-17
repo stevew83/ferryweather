@@ -23,9 +23,12 @@ LOCATIONS = {
 # Load schedule from CSV using Pandas
 try:
     schedule_df = pd.read_csv("beaumont-flanders_winter2024.csv")
+    st.write("Loaded file: beaumont-flanders_winter2024.csv")
 except FileNotFoundError:
-    st.error("CSV file not found. Ensure 'beaumont-flanders_winter2024.csv' is in the same directory.")
+    st.error("CSV file 'beaumont-flanders_winter2024.csv' not found.")
     st.stop()
+
+
 
 def fetch_weather(location, date_str):
     """Fetch hourly forecast data from Visual Crossing for the specified date."""
