@@ -13,7 +13,7 @@ The python code is connected to a csv file which contains ferry schedule data.  
     - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute.  
     - This is a general guide. Please check the marine forecast below and the NL ferry schedule for updates or changes.
 
-https://weather.gc.ca/marine/forecast_e.html?mapID=14&siteID=01400 - marine forecast for area
+https://weather.gc.ca/marine/forecast_e.html?mapID=14&siteID=04100 - marine forecast for area
 https://511nl.ca/list/ferryterminalsforlist - page that updates users about delays and cancellations
 https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/ - location of ferry schedules updated by GovNL transportation and infrastructure
 https://www.facebook.com/groups/232199710220394 - Bell Island Ferry Facebook group where people discuss up to minute issues and developments.
