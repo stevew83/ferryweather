@@ -23,10 +23,10 @@ LOCATIONS = {
 
 # Load schedule from CSV using Pandas
 try:
-    schedule_df = pd.read_csv("beaumont-flanders_winter2024.csv")
-    st.write("Current schedule: beaumont-flanders 2025")
+    schedule_df = pd.read_csv("flanders-veteran_spring2025.csv")
+    st.write("Current schedule: flanders-veteran_spring2025")
 except FileNotFoundError:
-    st.error("CSV file 'beaumont-flanders_winter2024.csv' not found.")
+    st.error("CSV file 'flanders-veteran_spring2025' not found.")
     st.stop()
 
 
