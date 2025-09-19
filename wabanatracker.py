@@ -23,10 +23,10 @@ LOCATIONS = {
 
 # Load schedule from CSV using Pandas
 try:
-    schedule_df = pd.read_csv("beaumont-flanders_winter2024.csv")
-    st.write("Current schedule: beaumont-flanders")
+    schedule_df = pd.read_csv("ferry-schedule.csv")
+    st.write("Current schedule: legionnaire-flanders")
 except FileNotFoundError:
-    st.error("CSV file 'beaumont-flanders_winter2024.csv' not found.")
+    st.error("CSV file 'ferry-schedule.csv' not found.")
     st.stop()
 
 
@@ -179,6 +179,7 @@ if selected_dock:
                             f"Gusts: {hour.get('windgust', 'N/A')} km/h"
                         )
                         break
+
 
 
 
