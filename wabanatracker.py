@@ -22,14 +22,24 @@ LOCATIONS = {
 }
 
 # Load schedule from CSV using Pandas
+
+# --- Schedule selection ---
+SCHEDULES = {
+    "Legionnaire–Flanders": "ferry_schedule.csv",
+    "Beaumont–Flanders Winter 2025": "beaumont-flanders_winter2024.csv"
+}
+
+# Dropdown for schedule selection
+schedule_choice = st.selectbox("Select a schedule:", list(SCHEDULES.keys()))
+
+# Load the chosen CSV
+schedule_file = SCHEDULES[schedule_choice]
 try:
-    schedule_df = pd.read_csv("ferry_schedule.csv")
-    st.write("Current schedule: legionnaire-flanders")
+    schedule_df = pd.read_csv(schedule_file)
+    st.write(f"✅ Current schedule loaded: **{schedule_choice}**")
 except FileNotFoundError:
-    st.error("CSV file 'ferry_schedule.csv' not found.")
+    st.error(f"CSV file '{schedule_file}' not found.")
     st.stop()
-
-
 
 def fetch_weather(location, date_str):
     """Fetch hourly forecast data from Visual Crossing for the specified date."""
@@ -179,6 +189,7 @@ if selected_dock:
                             f"Gusts: {hour.get('windgust', 'N/A')} km/h"
                         )
                         break
+
 
 
 
