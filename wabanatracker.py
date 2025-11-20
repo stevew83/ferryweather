@@ -25,8 +25,9 @@ LOCATIONS = {
 
 # --- Schedule selection ---
 SCHEDULES = {
+    "Legionnaire-Beaumont Temporary Dock Work 2025": "legionnaire-bh-dock_winter2025.csv",
     "Legionnaire–Flanders": "ferry_schedule.csv",
-    "Beaumont–Flanders Winter 2025": "beaumont-flanders_winter2024.csv"
+    "Beaumont–Flanders Winter 2024": "beaumont-flanders_winter2024.csv"
 }
 
 # Dropdown for schedule selection
@@ -189,6 +190,7 @@ if selected_dock:
                             f"Gusts: {hour.get('windgust', 'N/A')} km/h"
                         )
                         break
+
 
 
 
