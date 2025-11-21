@@ -135,9 +135,9 @@ st.sidebar.info(
 
 # Add Useful Links to the sidebar
 st.sidebar.title("Useful Links")
-st.sidebar.markdown("[Marine Forecast - EastCoast](https://weather.gc.ca/marine/forecast_e.html?mapID=14&siteID=04100)")
+st.sidebar.markdown("[Marine Forecast - EastCoast](https://511nl.ca/map#MarineWeather-143)")
 st.sidebar.markdown("[511NL - Ferry Updates](https://511nl.ca/list/ferryterminalsforlist) Info about delays and cancellations")
-st.sidebar.markdown("[Bell Island - Portugal Cove Schedules](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
+st.sidebar.markdown("[GovNL Official Bell Island - Portugal Cove Schedules](https://www.gov.nl.ca/ti/ferryservices/schedules/a-bipc/)")
 st.sidebar.markdown("[Bell Island Ferry Facebook Group](https://www.facebook.com/groups/232199710220394)")
 st.sidebar.markdown("[NTV Live Webcam - Bell Island](https://ntvplus.ca/pages/webcam-stphilips-bellisland) View lineup")
 st.sidebar.markdown("[Ferry map tracking](https://www.marinetraffic.com/en/ais/home/centerx:-52.901/centery:47.624/zoom:13)")
@@ -190,6 +190,7 @@ if selected_dock:
                             f"Gusts: {hour.get('windgust', 'N/A')} km/h"
                         )
                         break
+
 
 
 
