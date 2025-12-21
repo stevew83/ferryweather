@@ -268,7 +268,7 @@ if selected_dock:
             temp = vc_hour.get("temp")
             # If you haven't defined compact_condition yet, replace the next line with:
             # cond = vc_hour.get("conditions", "—")
-            cond = compact_condition(vc_hour.get("conditions", "—"))
+            cond = vc_hour.get("conditions", "—")
 
             wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
             wspd = vc_hour.get("windspeed")
@@ -298,6 +298,7 @@ if selected_dock:
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
