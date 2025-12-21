@@ -247,31 +247,66 @@ if selected_dock:
             display_wind_message(weather_data, selected_day)
 
             # Display all scheduled times with weather
-            for _, row in filtered_schedule.iterrows():
-                original_time = row["Time"]
-                rounded_time = round_schedule_time(original_time)
-                
-                # Match rounded time with weather data
-                for hour in weather_data["days"][0]["hours"]:
-                    forecast_time = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
-                    if forecast_time == rounded_time:
-                        st.write(
-                            f"**{original_time} ({row['Ferry']})**: {hour.get('temp', 'N/A')}°C, {hour.get('conditions', 'N/A')}, "
-                            f"Wind {get_cardinal_direction(hour.get('winddir', 0))}: {hour.get('windspeed', 'N/A')} km/h, "
-                            f"Gusts: {hour.get('windgust', 'N/A')} km/h"
-                        )
+            # --- Fetch waves once (safe) ---
+wave_lookup = {}
+try:
+    lat_str, lon_str = LOCATIONS[selected_dock].split(",")
+    wave_data = fetch_wave_data(float(lat_str), float(lon_str), selected_date)
+    wave_lookup = build_wave_lookup(wave_data)
+except Exception:
+    wave_lookup = {}
 
-                         # --- NEW: add wave info, if available for this rounded time ---
-                        wave = wave_lookup.get(rounded_time)
-                        if wave and wave.get("wave_height") is not None:
-                            wave_dir = wave.get("wave_direction", 0) or 0
-                            st.write(
-                                f"↳ Waves: {wave['wave_height']} m, "
-                                f"period {wave.get('wave_period', 'N/A')} s, "
-                                f"direction {get_cardinal_direction(wave_dir)}"
-                            )
-                        # 
-                        break
+# --- Build a lookup for Visual Crossing hours keyed by '01:00 PM' ---
+vc_hour_lookup = {}
+for hour in weather_data["days"][0]["hours"]:
+    key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
+    vc_hour_lookup[key] = hour
+
+rows = []
+
+for _, row in filtered_schedule.iterrows():
+    original_time = row["Time"]
+    rounded_time = round_schedule_time(original_time)
+
+    vc_hour = vc_hour_lookup.get(rounded_time)
+    if not vc_hour:
+        continue
+
+    temp = vc_hour.get("temp")
+    cond = compact_condition(vc_hour.get("conditions", "—"))
+
+    wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
+    wspd = vc_hour.get("windspeed")
+    wgst = vc_hour.get("windgust")
+
+    # Wind compact: "WNW 35 (55)"
+    wind_txt = f"{wdir} {wspd} ({wgst})" if wspd is not None else "—"
+
+    wave = wave_lookup.get(rounded_time)
+    waves_txt = "—"
+    if wave and wave.get("wave_height") is not None:
+        wh = wave["wave_height"]
+        wp = wave.get("wave_period")
+        # Compact: "1.2m @ 8s"
+        if wp is not None:
+            waves_txt = f"{wh:.1f}m @ {wp:.0f}s"
+        else:
+            waves_txt = f"{wh:.1f}m"
+
+    weather_txt = f"{temp}°C {cond}" if temp is not None else f"— {cond}"
+
+    rows.append({
+        "Time": original_time,
+        "Ferry": row.get("Ferry", ""),
+        "Weather": weather_txt,
+        "Wind (km/h)": wind_txt,      # speed (gust)
+        "Waves (m@s)": waves_txt,
+    })
+
+df = pd.DataFrame(rows)
+
+st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
