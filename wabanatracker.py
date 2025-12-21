@@ -232,9 +232,9 @@ if selected_dock:
 
 
     if filtered_schedule.empty:
-    st.warning("No ferry schedules found for the selected location and day.")
-else:
-    weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
+        st.warning("No ferry schedules found for the selected location and day.")
+    else:
+        weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
 
     if weather_data:
         st.header(f"Unofficial Ferry Departure Schedule and Weather for {selected_day} at {selected_dock}, NL")
@@ -298,6 +298,7 @@ else:
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
