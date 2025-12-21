@@ -237,6 +237,7 @@ st.sidebar.info(
     
     **Disclaimer:**
     - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute. Wave data is model-based.
+    - Wind gusts are shown in parentheses.
     - This is a general guide. Please check the marine forecast below and the Gov NL ferry schedule for official updates or changes.
     
     **This is a personal project.** It may contain errors. I may develop it further for accuracy, readability, etc.
@@ -340,12 +341,13 @@ else:
                 "Time": original_time,
                 "Ferry": ferry_short(row.get("Ferry", "")),
                 "Wx": wx_txt,
-                "Wind": wind_txt,
+                "Wind (km/h)": wind_txt,
                 "Waves": waves_txt,
             })
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
