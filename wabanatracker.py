@@ -21,6 +21,13 @@ LOCATIONS = {
     "Portugal Cove": "47.6196,-52.8672",
 }
 
+# Coordinates for tickle midpoint where wave height and wave period are measured
+TICKLE_MIDPOINT = {
+    "name": "Bell Island–Portugal Cove Tickle",
+    "lat": 47.6235,
+    "lon": -52.90335,
+}
+
 # Define weather icons to represent weather conditions
 def wx_icon(conditions):
     if not isinstance(conditions, str):
@@ -77,38 +84,26 @@ def ferry_short(name):
         return f"{base} M"    
     return base
 
+@st.cache_data(ttl=30*60)
 def fetch_wave_data(lat, lon, date_str):
-    """Fetch hourly wave data from Open-Meteo Marine API for the specified date."""
     params = {
         "latitude": lat,
         "longitude": lon,
-        "hourly": ",".join([
-            "wave_height",
-            "wave_period",
-            "wave_direction",
-            "wind_wave_height",
-            "wind_wave_period",
-            "wind_wave_direction",
-            "swell_wave_height",
-            "swell_wave_period",
-            "swell_wave_direction",
-        ]),
+        "hourly": "wave_height,wave_period,wave_direction",
         "timezone": "America/St_Johns",
         "start_date": date_str,
         "end_date": date_str,
     }
-    response = requests.get(OM_BASE_URL, params=params)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.warning(f"Failed to fetch wave data: {response.status_code}")
-        return None
+    response = requests.get(OM_BASE_URL, params=params, timeout=12)
+    response.raise_for_status()
+    return response.json()
+
+def fetch_tickle_midpoint_wave_data(date_str):
+    lat, lon = TICKLE_MIDPOINT
+    return fetch_wave_data(lat, lon, date_str)
 
 def build_wave_lookup(wave_data):
-    """
-    Turn Open-Meteo hourly data into a dict keyed by local 12-hour time string,
-    e.g. '01:00 PM' -> {'wave_height': ..., 'wave_period': ..., ...}
-    """
+    """Convert Open-Meteo hourly wave data into dict keyed by '01:00 PM'."""
     if not wave_data:
         return {}
 
@@ -118,22 +113,16 @@ def build_wave_lookup(wave_data):
 
     for i, t in enumerate(times):
         try:
-            dt = datetime.fromisoformat(t)  # already in America/St_Johns if timezone passed
+            dt = datetime.fromisoformat(t)
         except ValueError:
             continue
 
         time_key = dt.strftime("%I:%M %p")
 
         lookup[time_key] = {
-            "wave_height": hourly.get("wave_height", [None])[i],
-            "wave_period": hourly.get("wave_period", [None])[i],
-            "wave_direction": hourly.get("wave_direction", [None])[i],
-            "wind_wave_height": hourly.get("wind_wave_height", [None])[i],
-            "wind_wave_period": hourly.get("wind_wave_period", [None])[i],
-            "wind_wave_direction": hourly.get("wind_wave_direction", [None])[i],
-            "swell_wave_height": hourly.get("swell_wave_height", [None])[i],
-            "swell_wave_period": hourly.get("swell_wave_period", [None])[i],
-            "swell_wave_direction": hourly.get("swell_wave_direction", [None])[i],
+            "wave_height": (hourly.get("wave_height") or [None])[i],
+            "wave_period": (hourly.get("wave_period") or [None])[i],
+            "wave_direction": (hourly.get("wave_direction") or [None])[i],
         }
 
     return lookup
@@ -297,11 +286,10 @@ if selected_dock:
         st.header(f"Unofficial Ferry Schedule for {selected_day} at {selected_dock}, NL")
         display_wind_message(weather_data, selected_day)
 
-        # --- Fetch waves once (safe) ---
         wave_lookup = {}
         try:
-            lat_str, lon_str = LOCATIONS[selected_dock].split(",")
-            wave_data = fetch_wave_data(float(lat_str), float(lon_str), selected_date)
+            mid_lat, mid_lon = TICKLE_MIDPOINT
+            wave_data = fetch_wave_data(mid_lat, mid_lon, selected_date)
             wave_lookup = build_wave_lookup(wave_data)
         except Exception:
             wave_lookup = {}
@@ -357,6 +345,7 @@ for _, row in filtered_schedule.iterrows():
         
 df = pd.DataFrame(rows)
 st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
