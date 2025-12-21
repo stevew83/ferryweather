@@ -21,6 +21,71 @@ LOCATIONS = {
     "Portugal Cove": "47.6196,-52.8672",
 }
 
+
+# --- NEW (Open-Meteo Marine API) ---
+OM_BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
+
+def fetch_wave_data(lat, lon, date_str):
+    """Fetch hourly wave data from Open-Meteo Marine API for the specified date."""
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "hourly": ",".join([
+            "wave_height",
+            "wave_period",
+            "wave_direction",
+            "wind_wave_height",
+            "wind_wave_period",
+            "wind_wave_direction",
+            "swell_wave_height",
+            "swell_wave_period",
+            "swell_wave_direction",
+        ]),
+        "timezone": "America/St_Johns",
+        "start_date": date_str,
+        "end_date": date_str,
+    }
+    response = requests.get(OM_BASE_URL, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.warning(f"Failed to fetch wave data: {response.status_code}")
+        return None
+
+def build_wave_lookup(wave_data):
+    """
+    Turn Open-Meteo hourly data into a dict keyed by local 12-hour time string,
+    e.g. '01:00 PM' -> {'wave_height': ..., 'wave_period': ..., ...}
+    """
+    if not wave_data:
+        return {}
+
+    hourly = wave_data.get("hourly", {})
+    times = hourly.get("time", [])
+    lookup = {}
+
+    for i, t in enumerate(times):
+        try:
+            dt = datetime.fromisoformat(t)  # already in America/St_Johns if timezone passed
+        except ValueError:
+            continue
+
+        time_key = dt.strftime("%I:%M %p")
+
+        lookup[time_key] = {
+            "wave_height": hourly.get("wave_height", [None])[i],
+            "wave_period": hourly.get("wave_period", [None])[i],
+            "wave_direction": hourly.get("wave_direction", [None])[i],
+            "wind_wave_height": hourly.get("wind_wave_height", [None])[i],
+            "wind_wave_period": hourly.get("wind_wave_period", [None])[i],
+            "wind_wave_direction": hourly.get("wind_wave_direction", [None])[i],
+            "swell_wave_height": hourly.get("swell_wave_height", [None])[i],
+            "swell_wave_period": hourly.get("swell_wave_period", [None])[i],
+            "swell_wave_direction": hourly.get("swell_wave_direction", [None])[i],
+        }
+
+    return lookup
+
 # Load schedule from CSV using Pandas
 
 # --- Schedule selection ---
@@ -170,6 +235,12 @@ if selected_dock:
         st.warning("No ferry schedules found for the selected location and day.")
     else:
         weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
+
+        # --- NEW: fetch wave data for this dock + day ---
+        lat_str, lon_str = LOCATIONS[selected_dock].split(",")
+        wave_data = fetch_wave_data(float(lat_str), float(lon_str), selected_date)
+        wave_lookup = build_wave_lookup(wave_data)
+        # -----------------------------------------------
         
         if weather_data:
             st.header(f"Unofficial Ferry Departure Schedule and Weather for {selected_day} at {selected_dock}, NL")
@@ -189,7 +260,21 @@ if selected_dock:
                             f"Wind {get_cardinal_direction(hour.get('winddir', 0))}: {hour.get('windspeed', 'N/A')} km/h, "
                             f"Gusts: {hour.get('windgust', 'N/A')} km/h"
                         )
+
+                         # --- NEW: add wave info, if available for this rounded time ---
+                        wave = wave_lookup.get(rounded_time)
+                        if wave and wave.get("wave_height") is not None:
+                            wave_dir = wave.get("wave_direction", 0) or 0
+                            st.write(
+                                f"↳ Waves: {wave['wave_height']} m, "
+                                f"period {wave.get('wave_period', 'N/A')} s, "
+                                f"direction {get_cardinal_direction(wave_dir)}"
+                            )
+                        # 
                         break
+
+
+
 
 
 
