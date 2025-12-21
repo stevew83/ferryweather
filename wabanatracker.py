@@ -223,6 +223,8 @@ st.sidebar.info(
     """
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com)) and for wave data ([open-meteo.com](https://www.open-meteo.com))** 
     to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
+
+    Wave data is gathered from location in the center of the tickle between both docks.
     
     Wave height is shown in meters (m) 
     - Normal: < 1.0 m
@@ -348,6 +350,7 @@ else:
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
