@@ -98,10 +98,6 @@ def fetch_wave_data(lat, lon, date_str):
     response.raise_for_status()
     return response.json()
 
-def fetch_tickle_midpoint_wave_data(date_str):
-    lat, lon = TICKLE_MIDPOINT
-    return fetch_wave_data(lat, lon, date_str)
-
 def build_wave_lookup(wave_data):
     """Convert Open-Meteo hourly wave data into dict keyed by '01:00 PM'."""
     if not wave_data:
@@ -277,74 +273,78 @@ if selected_dock:
 ]
 
 
-    if filtered_schedule.empty:
-        st.warning("No ferry schedules found for the selected location and day.")
-    else:
-        weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
+if filtered_schedule.empty:
+    st.warning("No ferry schedules found for the selected location and day.")
+else:
+    weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
 
     if weather_data:
         st.header(f"Unofficial Ferry Schedule for {selected_day} at {selected_dock}, NL")
         display_wind_message(weather_data, selected_day)
 
+        # --- Fetch waves once (tickle midpoint) ---
         wave_lookup = {}
         try:
-            mid_lat, mid_lon = TICKLE_MIDPOINT
+            mid_lat = TICKLE_MIDPOINT["lat"]
+            mid_lon = TICKLE_MIDPOINT["lon"]
             wave_data = fetch_wave_data(mid_lat, mid_lon, selected_date)
             wave_lookup = build_wave_lookup(wave_data)
-        except Exception:
+        except Exception as e:
+            st.warning(f"Waves unavailable: {type(e).__name__}: {e}")
             wave_lookup = {}
 
-# --- Build VC hour lookup keyed by '01:00 PM' ---
-vc_hour_lookup = {}
-for hour in weather_data["days"][0]["hours"]:
-    key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
-    vc_hour_lookup[key] = hour
+        # --- Build VC hour lookup keyed by '01:00 PM' ---
+        vc_hour_lookup = {}
+        for hour in weather_data["days"][0]["hours"]:
+            key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
+            vc_hour_lookup[key] = hour
 
-rows = []
+        rows = []
 
-for _, row in filtered_schedule.iterrows():
-    original_time = row["Time"]
-    rounded_time = round_schedule_time(original_time)
-        
-    vc_hour = vc_hour_lookup.get(rounded_time)
-    if not vc_hour:
-        continue
-        
-    temp = vc_hour.get("temp")
-    icon = wx_icon(vc_hour.get("conditions", ""))
-        
-    wx_txt = "—"
-    if temp is not None:
-        wx_txt = f"{int(round(temp))}°{icon}"
-        
-    wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
-    wspd = vc_hour.get("windspeed")
-    wgst = vc_hour.get("windgust")
-        
-    wind_txt = "—"
-    if wspd is not None:
-        if wgst is not None:
-            wind_txt = f"{wdir} {int(round(wspd))} ({int(round(wgst))})"
-        else:
-            wind_txt = f"{wdir} {int(round(wspd))}"
-        
-    wave = wave_lookup.get(rounded_time)
-    waves_txt = "—"
-    if wave and wave.get("wave_height") is not None:
-        wh = wave["wave_height"]
-        wp = wave.get("wave_period")
-        waves_txt = f"{wh:.1f}m·{wp:.0f}s" if wp is not None else f"{wh:.1f}m"
-        
-    rows.append({
-        "Time": original_time,
-        "Ferry": ferry_short(row.get("Ferry", "")),
-        "Wx": wx_txt,
-        "Wind": wind_txt,
-        "Waves": waves_txt,
-    })
-        
-df = pd.DataFrame(rows)
-st.dataframe(df, use_container_width=True, hide_index=True)
+        for _, row in filtered_schedule.iterrows():
+            original_time = row["Time"]
+            rounded_time = round_schedule_time(original_time)
+
+            vc_hour = vc_hour_lookup.get(rounded_time)
+            if not vc_hour:
+                continue
+
+            temp = vc_hour.get("temp")
+            icon = wx_icon(vc_hour.get("conditions", ""))
+
+            wx_txt = "—"
+            if temp is not None:
+                wx_txt = f"{int(round(temp))}°{icon}"
+
+            wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
+            wspd = vc_hour.get("windspeed")
+            wgst = vc_hour.get("windgust")
+
+            wind_txt = "—"
+            if wspd is not None:
+                wind_txt = f"{wdir} {int(round(wspd))}"
+                if wgst is not None:
+                    wind_txt += f" ({int(round(wgst))})"
+
+            wave = wave_lookup.get(rounded_time)
+            waves_txt = "—"
+            if wave and wave.get("wave_height") is not None:
+                wh = wave["wave_height"]
+                wp = wave.get("wave_period")
+                waves_txt = f"{wh:.1f}m·{wp:.0f}s" if wp is not None else f"{wh:.1f}m"
+
+            rows.append({
+                "Time": original_time,
+                "Ferry": ferry_short(row.get("Ferry", "")),
+                "Wx": wx_txt,
+                "Wind": wind_txt,
+                "Waves": waves_txt,
+            })
+
+        df = pd.DataFrame(rows)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+
 
 
 
