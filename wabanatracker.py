@@ -224,13 +224,14 @@ st.sidebar.info(
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com)) and for wave data ([open-meteo.com](https://www.open-meteo.com))** 
     to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
     
-    Wave height is shown in meters (m) and wave period means seconds (s) between waves 
+    Wave height is shown in meters (m) 
+    - Normal: < 1.0 m
+    - Caution: 1.0–1.5 m
+    - Rough: 1.5–2.0 m
+    - Severe: ≥ 2.0 m
+
+    Wave period means seconds (s) between waves 
     The shorter the period between waves, the choppier that water will be (depending on wave height and wind). 
-    
-    Normal: < 1.0 m
-    Caution: 1.0–1.5 m
-    Rough: 1.5–2.0 m
-    Severe: ≥ 2.0 m
    
     Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
@@ -347,6 +348,7 @@ else:
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
