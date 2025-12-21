@@ -21,6 +21,37 @@ LOCATIONS = {
     "Portugal Cove": "47.6196,-52.8672",
 }
 
+# Define weather icons to represent weather conditions
+def wx_icon(conditions):
+    if not isinstance(conditions, str):
+        return ""
+    c = conditions.lower()
+
+    # Freezing rain / sleet / ice / snow
+    if "freezing" in c or "ice" in c or "sleet" in c or "snow" in c:
+        return "❄️"
+
+    # Rain
+    if "rain" in c or "shower" in c:
+        return "🌧️"
+
+    # Fog / mist
+    if "fog" in c or "mist" in c:
+        return "🌫️"
+
+    # Cloudy / overcast
+    if "cloud" in c or "overcast" in c:
+        return "☁️"
+
+    # Partly cloudy
+    if "partly" in c or "partial" in c:
+        return "⛅"
+
+    # Clear / sunny
+    if "clear" in c or "sun" in c:
+        return "☀️"
+
+    return ""
 
 # --- NEW (Open-Meteo Marine API) ---
 OM_BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
@@ -186,7 +217,7 @@ st.sidebar.info(
     """
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com)) and for wave data ([open-meteo.com](https://www.open-meteo.com))** 
     to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
-    - Wave time indicates period between waves
+    - Wave height is shown in meters (m) and wave period is shown in seconds (s) between waves 
     Normal: < 1.0 m
     Caution: 1.0–1.5 m
     Rough: 1.5–2.0 m
@@ -254,55 +285,58 @@ if selected_dock:
         except Exception:
             wave_lookup = {}
 
-        # --- Build VC hour lookup keyed by '01:00 PM' ---
-        vc_hour_lookup = {}
-        for hour in weather_data["days"][0]["hours"]:
-            key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
-            vc_hour_lookup[key] = hour
+# --- Build VC hour lookup keyed by '01:00 PM' ---
+vc_hour_lookup = {}
+for hour in weather_data["days"][0]["hours"]:
+    key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
+    vc_hour_lookup[key] = hour
 
-        rows = []
+rows = []
 
-        for _, row in filtered_schedule.iterrows():
-            original_time = row["Time"]
-            rounded_time = round_schedule_time(original_time)
+for _, row in filtered_schedule.iterrows():
+    original_time = row["Time"]
+    rounded_time = round_schedule_time(original_time)
+        
+    vc_hour = vc_hour_lookup.get(rounded_time)
+    if not vc_hour:
+        continue
+        
+    temp = vc_hour.get("temp")
+    icon = wx_icon(vc_hour.get("conditions", ""))
+        
+    wx_txt = "—"
+    if temp is not None:
+        wx_txt = f"{int(round(temp))}°{icon}"
+        
+    wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
+    wspd = vc_hour.get("windspeed")
+    wgst = vc_hour.get("windgust")
+        
+    wind_txt = "—"
+    if wspd is not None:
+        if wgst is not None:
+            wind_txt = f"{wdir} {int(round(wspd))} ({int(round(wgst))})"
+        else:
+            wind_txt = f"{wdir} {int(round(wspd))}"
+        
+    wave = wave_lookup.get(rounded_time)
+    waves_txt = "—"
+    if wave and wave.get("wave_height") is not None:
+        wh = wave["wave_height"]
+        wp = wave.get("wave_period")
+        waves_txt = f"{wh:.1f}m·{wp:.0f}s" if wp is not None else f"{wh:.1f}m"
+        
+    rows.append({
+        "Time": original_time,
+        "Ferry": row.get("Ferry", ""),
+        "Wx": wx_txt,
+        "Wind": wind_txt,
+        "Waves": waves_txt,
+    })
+        
+df = pd.DataFrame(rows)
+st.dataframe(df, use_container_width=True, hide_index=True)
 
-            vc_hour = vc_hour_lookup.get(rounded_time)
-            if not vc_hour:
-                continue
-
-            temp = vc_hour.get("temp")
-            # If you haven't defined compact_condition yet, replace the next line with:
-            # cond = vc_hour.get("conditions", "—")
-            cond = vc_hour.get("conditions", "—")
-
-            wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
-            wspd = vc_hour.get("windspeed")
-            wgst = vc_hour.get("windgust")
-
-            wind_txt = f"{wdir} {wspd} ({wgst})" if wspd is not None else "—"
-
-            wave = wave_lookup.get(rounded_time)
-            waves_txt = "—"
-            if wave and wave.get("wave_height") is not None:
-                wh = wave["wave_height"]
-                wp = wave.get("wave_period")
-                if wp is not None:
-                    waves_txt = f"{wh:.1f}m @ {wp:.0f}s"
-                else:
-                    waves_txt = f"{wh:.1f}m"
-
-            weather_txt = f"{temp}°C {cond}" if temp is not None else f"— {cond}"
-
-            rows.append({
-                "Time": original_time,
-                "Ferry": row.get("Ferry", ""),
-                "Weather": weather_txt,
-                "Wind (km/h)": wind_txt,
-                "Waves (m@s)": waves_txt,
-            })
-
-        df = pd.DataFrame(rows)
-        st.dataframe(df, use_container_width=True, hide_index=True)
 
 
 
