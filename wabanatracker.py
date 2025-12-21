@@ -56,6 +56,27 @@ def wx_icon(conditions):
 # --- NEW (Open-Meteo Marine API) ---
 OM_BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
 
+def ferry_short(name):
+    if not isinstance(name, str):
+        return "—"
+
+    n = name.strip().lower()
+
+    # Identify base ferry
+    if "beaumont" in n or "bh" in n:
+        base = "BH"
+    elif "legionnaire" in n or "leg" in n:
+        base = "Leg"
+    elif "flanders" in n:
+        base = "F"
+    else:
+        base = name.strip()[:3].title()  # fallback
+
+    # Check for maintenance
+    if "maint" in n or "maintenance" in n:
+        return f"{base} M"    
+    return base
+
 def fetch_wave_data(lat, lon, date_str):
     """Fetch hourly wave data from Open-Meteo Marine API for the specified date."""
     params = {
@@ -328,7 +349,7 @@ for _, row in filtered_schedule.iterrows():
         
     rows.append({
         "Time": original_time,
-        "Ferry": row.get("Ferry", ""),
+        "Ferry": ferry_short(row.get("Ferry", "")),
         "Wx": wx_txt,
         "Wind": wind_txt,
         "Waves": waves_txt,
@@ -336,6 +357,7 @@ for _, row in filtered_schedule.iterrows():
         
 df = pd.DataFrame(rows)
 st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
