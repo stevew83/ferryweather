@@ -294,7 +294,7 @@ if selected_dock:
         weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
 
     if weather_data:
-        st.header(f"Unofficial Ferry Departure Schedule and Weather for {selected_day} at {selected_dock}, NL")
+        st.header(f"Unofficial Ferry Schedule for {selected_day} at {selected_dock}, NL")
         display_wind_message(weather_data, selected_day)
 
         # --- Fetch waves once (safe) ---
@@ -357,6 +357,7 @@ for _, row in filtered_schedule.iterrows():
         
 df = pd.DataFrame(rows)
 st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
