@@ -230,8 +230,8 @@ st.sidebar.info(
     - Rough: 1.5–2.0 m
     - Severe: ≥ 2.0 m
 
-    Wave period means seconds (s) between waves 
-    The shorter the period between waves, the choppier that water will be (depending on wave height and wind). 
+    Wave period means seconds (s) between waves. 
+    The shorter the period between waves, the choppier the water will be (depending on wave height and wind). 
    
     Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
@@ -348,6 +348,7 @@ else:
 
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
+
 
 
 
