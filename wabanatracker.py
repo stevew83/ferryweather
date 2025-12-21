@@ -21,6 +21,108 @@ LOCATIONS = {
     "Portugal Cove": "47.6196,-52.8672",
 }
 
+# Coordinates for tickle midpoint where wave height and wave period are measured
+TICKLE_MIDPOINT = {
+    "name": "Bell Island–Portugal Cove Tickle",
+    "lat": 47.6235,
+    "lon": -52.90335,
+}
+
+# Define weather icons to represent weather conditions
+def wx_icon(conditions):
+    if not isinstance(conditions, str):
+        return ""
+    c = conditions.lower()
+
+    # Freezing rain / sleet / ice / snow
+    if "freezing" in c or "ice" in c or "sleet" in c or "snow" in c:
+        return "❄️"
+
+    # Rain
+    if "rain" in c or "shower" in c:
+        return "🌧️"
+
+    # Fog / mist
+    if "fog" in c or "mist" in c:
+        return "🌫️"
+
+    # Cloudy / overcast
+    if "cloud" in c or "overcast" in c:
+        return "☁️"
+
+    # Partly cloudy
+    if "partly" in c or "partial" in c:
+        return "⛅"
+
+    # Clear / sunny
+    if "clear" in c or "sun" in c:
+        return "☀️"
+
+    return ""
+
+# --- NEW (Open-Meteo Marine API) ---
+OM_BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
+
+def ferry_short(name):
+    if not isinstance(name, str):
+        return "—"
+
+    n = name.strip().lower()
+
+    # Identify base ferry
+    if "beaumont" in n or "bh" in n:
+        base = "BH"
+    elif "legionnaire" in n or "leg" in n:
+        base = "Leg"
+    elif "flanders" in n:
+        base = "F"
+    else:
+        base = name.strip()[:3].title()  # fallback
+
+    # Check for maintenance
+    if "maint" in n or "maintenance" in n:
+        return f"{base} M"    
+    return base
+
+@st.cache_data(ttl=30*60)
+def fetch_wave_data(lat, lon, date_str):
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "hourly": "wave_height,wave_period,wave_direction",
+        "timezone": "America/St_Johns",
+        "start_date": date_str,
+        "end_date": date_str,
+    }
+    response = requests.get(OM_BASE_URL, params=params, timeout=12)
+    response.raise_for_status()
+    return response.json()
+
+def build_wave_lookup(wave_data):
+    """Convert Open-Meteo hourly wave data into dict keyed by '01:00 PM'."""
+    if not wave_data:
+        return {}
+
+    hourly = wave_data.get("hourly", {})
+    times = hourly.get("time", [])
+    lookup = {}
+
+    for i, t in enumerate(times):
+        try:
+            dt = datetime.fromisoformat(t)
+        except ValueError:
+            continue
+
+        time_key = dt.strftime("%I:%M %p")
+
+        lookup[time_key] = {
+            "wave_height": (hourly.get("wave_height") or [None])[i],
+            "wave_period": (hourly.get("wave_period") or [None])[i],
+            "wave_direction": (hourly.get("wave_direction") or [None])[i],
+        }
+
+    return lookup
+
 # Load schedule from CSV using Pandas
 
 # --- Schedule selection ---
@@ -119,15 +221,27 @@ st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y 
 st.sidebar.title("About")
 st.sidebar.info(
     """
-    **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com))** 
+    **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com)) and for wave data ([open-meteo.com](https://www.open-meteo.com))** 
     to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
+
+    Wave data is gathered from location in the center of the tickle between both docks.
     
+    Wave height is shown in meters (m) 
+    - Normal: < 1.0 m
+    - Caution: 1.0–1.5 m
+    - Rough: 1.5–2.0 m
+    - Severe: ≥ 2.0 m
+
+    Wave period means seconds (s) between waves. 
+    The shorter the period between waves, the choppier the water will be (depending on wave height and wind). 
+   
     Select a Day and Location
     and the weather data will update for each scheduled departure. The app contains weather for 7 days.
     
     **Disclaimer:**
-    - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute.  
-    - This is a general guide. Please check the marine forecast below and the NL ferry schedule for updates or changes.
+    - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute. Wave data is model-based.
+    - Wind gusts are shown in parentheses.
+    - This is a general guide. Please check the marine forecast below and the Gov NL ferry schedule for official updates or changes.
     
     **This is a personal project.** It may contain errors. I may develop it further for accuracy, readability, etc.
     """
@@ -166,30 +280,96 @@ if selected_dock:
 ]
 
 
-    if filtered_schedule.empty:
-        st.warning("No ferry schedules found for the selected location and day.")
-    else:
-        weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
-        
-        if weather_data:
-            st.header(f"Unofficial Ferry Departure Schedule and Weather for {selected_day} at {selected_dock}, NL")
-            display_wind_message(weather_data, selected_day)
+if filtered_schedule.empty:
+    st.warning("No ferry schedules found for the selected location and day.")
+else:
+    weather_data = fetch_weather(LOCATIONS[selected_dock], selected_date)
 
-            # Display all scheduled times with weather
-            for _, row in filtered_schedule.iterrows():
-                original_time = row["Time"]
-                rounded_time = round_schedule_time(original_time)
-                
-                # Match rounded time with weather data
-                for hour in weather_data["days"][0]["hours"]:
-                    forecast_time = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
-                    if forecast_time == rounded_time:
-                        st.write(
-                            f"**{original_time} ({row['Ferry']})**: {hour.get('temp', 'N/A')}°C, {hour.get('conditions', 'N/A')}, "
-                            f"Wind {get_cardinal_direction(hour.get('winddir', 0))}: {hour.get('windspeed', 'N/A')} km/h, "
-                            f"Gusts: {hour.get('windgust', 'N/A')} km/h"
-                        )
-                        break
+    if weather_data:
+        st.header(f"Unofficial Ferry Schedule for {selected_day} at {selected_dock}, NL")
+        display_wind_message(weather_data, selected_day)
+
+        # --- Fetch waves once (tickle midpoint) ---
+        wave_lookup = {}
+        try:
+            mid_lat = TICKLE_MIDPOINT["lat"]
+            mid_lon = TICKLE_MIDPOINT["lon"]
+            wave_data = fetch_wave_data(mid_lat, mid_lon, selected_date)
+            wave_lookup = build_wave_lookup(wave_data)
+        except Exception as e:
+            st.warning(f"Waves unavailable: {type(e).__name__}: {e}")
+            wave_lookup = {}
+
+        # --- Build VC hour lookup keyed by '01:00 PM' ---
+        vc_hour_lookup = {}
+        for hour in weather_data["days"][0]["hours"]:
+            key = datetime.strptime(hour["datetime"], "%H:%M:%S").strftime("%I:%M %p")
+            vc_hour_lookup[key] = hour
+
+        rows = []
+
+        for _, row in filtered_schedule.iterrows():
+            original_time = row["Time"]
+            rounded_time = round_schedule_time(original_time)
+
+            vc_hour = vc_hour_lookup.get(rounded_time)
+            if not vc_hour:
+                continue
+
+            temp = vc_hour.get("temp")
+            icon = wx_icon(vc_hour.get("conditions", ""))
+
+            wx_txt = "—"
+            if temp is not None:
+                wx_txt = f"{int(round(temp))}°{icon}"
+
+            wdir = get_cardinal_direction(vc_hour.get("winddir", 0) or 0)
+            wspd = vc_hour.get("windspeed")
+            wgst = vc_hour.get("windgust")
+
+            wind_txt = "—"
+            if wspd is not None:
+                wind_txt = f"{wdir} {int(round(wspd))}"
+                if wgst is not None:
+                    wind_txt += f" ({int(round(wgst))})"
+
+            wave = wave_lookup.get(rounded_time)
+            waves_txt = "—"
+            if wave and wave.get("wave_height") is not None:
+                wh = wave["wave_height"]
+                wp = wave.get("wave_period")
+                waves_txt = f"{wh:.1f}m·{wp:.0f}s" if wp is not None else f"{wh:.1f}m"
+
+            rows.append({
+                "Time": original_time,
+                "Ferry": ferry_short(row.get("Ferry", "")),
+                "Wx": wx_txt,
+                "Wind (km/h)": wind_txt,
+                "Waves": waves_txt,
+            })
+
+        df = pd.DataFrame(rows)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
