@@ -350,6 +350,10 @@ else:
 
         df = pd.DataFrame(rows)
         st.table(df)
+        
+st.write('"Leg" = MV Legionnaire')
+st.write('"BH" = MV Beaumont-Hamel')
+st.write('"F" = MV Flanders')
 
 
 
