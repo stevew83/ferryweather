@@ -224,6 +224,7 @@ st.sidebar.info(
     **This weather data is collected from Visual Crossing ([visualcrossing.com](https://www.visualcrossing.com)) and for wave data ([open-meteo.com](https://www.open-meteo.com))** 
     to provide weather forecasts for each ferry departure on the 5km Bell Island - Portugal Cove route near St. John's, Newfoundland and Labrador, Canada. 
 
+    Wind gusts are shown in parentheses.
     Wave data is gathered from location in the center of the tickle between both docks.
     
     Wave height is shown in meters (m) 
@@ -240,7 +241,6 @@ st.sidebar.info(
     
     **Disclaimer:**
     - Weather data is rounded to the nearest hour and may not be precise or up-to-the-minute. Wave data is model-based.
-    - Wind gusts are shown in parentheses.
     - This is a general guide. Please check the marine forecast below and the Gov NL ferry schedule for official updates or changes.
     
     **This is a personal project.** It may contain errors. I may develop it further for accuracy, readability, etc.
@@ -351,9 +351,9 @@ else:
         df = pd.DataFrame(rows)
         st.table(df)
         
-st.write('"Leg" = MV Legionnaire')
-st.write('"BH" = MV Beaumont-Hamel')
-st.write('"F" = MV Flanders')
+st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders')
+st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
+
 
 
 
