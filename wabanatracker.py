@@ -354,6 +354,7 @@ else:
 st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders')
 st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
 
+st.image('bi-pc-compass.jpg')
 
 
 
