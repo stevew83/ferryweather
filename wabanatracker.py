@@ -345,7 +345,7 @@ else:
                 "Ferry": ferry_short(row.get("Ferry", "")),
                 "Wx": wx_txt,
                 "Wind (km/h)": wind_txt,
-                "Waves": waves_txt,
+                "Wave h.period": waves_txt,
             })
 
         df = pd.DataFrame(rows)
@@ -355,6 +355,7 @@ st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders')
 st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
 
 st.image('bi-pc-compass.jpg')
+
 
 
 
