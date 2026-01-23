@@ -216,7 +216,8 @@ newfoundland_tz = pytz.timezone("America/St_Johns")
 # Current date and time in Newfoundland timezone
 current_datetime = datetime.now(newfoundland_tz)
 st.write(f"**Current Date and Time:** {current_datetime.strftime('%A, %b %d, %Y %I:%M %p')}")
-
+st.write("Wind = dir · avg (gust), km/h
+Wave = height · period")
 # Add About and Links section to the sidebar
 st.sidebar.title("About")
 st.sidebar.info(
@@ -345,7 +346,7 @@ else:
                 "Ferry": ferry_short(row.get("Ferry", "")),
                 "Wx": wx_txt,
                 "Wind (km/h)": wind_txt,
-                "Wave h.period": waves_txt,
+                "Wave": waves_txt,
             })
 
         df = pd.DataFrame(rows)
@@ -355,6 +356,7 @@ st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders')
 st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
 
 st.image('bi-pc-compass.jpg')
+
 
 
 
