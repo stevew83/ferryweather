@@ -128,8 +128,8 @@ def build_wave_lookup(wave_data):
 # --- Schedule selection ---
 SCHEDULES = {
     "Legionnaire–Flanders": "ferry_schedule.csv",
-    "Legionnaire-Beaumont Temporary Dock Work 2025": "legionnaire-bh-dock_winter2025.csv",
-    "Beaumont–Flanders Winter 2024": "beaumont-flanders_winter2024.csv"
+    "Legionnaire One Vessel": "legionnaireonevessel.csv",
+    "Beaumont–Flanders Winter": "beaumont-flanders_winter2024.csv"
 }
 
 # Dropdown for schedule selection
@@ -357,6 +357,7 @@ st.write("Wind = dir · avg (gust), km/h")
 st.write("Wave = height · period")
 
 st.image('bi-pc-compass.jpg')
+
 
 
 
