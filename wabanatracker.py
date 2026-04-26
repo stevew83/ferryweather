@@ -129,9 +129,8 @@ def build_wave_lookup(wave_data):
 
 # --- Schedule selection ---
 SCHEDULES = {
-    "Legionnaire One Vessel": "legionnaireonevessel.csv",
     "Legionnaire–Flanders": "ferry_schedule.csv",
-    "Beaumont–Flanders Winter": "beaumont-flanders_winter2024.csv"
+    "Legionnaire One Vessel": "legionnaireonevessel.csv",
 }
 
 # Dropdown for schedule selection
@@ -353,7 +352,7 @@ else:
         df = pd.DataFrame(rows)
         st.table(df)
         
-st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders')
+st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders; "K" = Kamutik W')
 st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
 st.write("Wind = dir · avg (gust), km/h")
 st.write("Wave = height · period")
