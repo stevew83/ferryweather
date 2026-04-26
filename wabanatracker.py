@@ -77,7 +77,7 @@ def ferry_short(name):
     elif "flanders" in n:
         base = "F"
     elif "Kamutik W" in n or "k" in n:
-        base = "K"    
+        base = "Kam"    
     else:
         base = name.strip()[:3].title()  # fallback
 
