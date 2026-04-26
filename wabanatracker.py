@@ -352,7 +352,7 @@ else:
         df = pd.DataFrame(rows)
         st.table(df)
         
-st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders; "K" = Kamutik W')
+st.write('"Leg" = MV Legionnaire; "BH" = MV Beaumont-Hamel; "F" = MV Flanders; "Kam" = Kamutik W')
 st.write('"M" means maintenance period for listed vessel (not a scheduled trip)')
 st.write("Wind = dir · avg (gust), km/h")
 st.write("Wave = height · period")
