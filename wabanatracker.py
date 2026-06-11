@@ -126,7 +126,7 @@ def build_wave_lookup(wave_data):
     return lookup
 
 st.write("Click for ferry updates")
-st.image("Screenshot_20260611-074949.png", width=15, link="https://511nl.ca/list/ferryterminalsforlist")
+st.image("Screenshot_20260611-074949.png", width=60, link="https://511nl.ca/list/ferryterminalsforlist")
 # Load schedule from CSV using Pandas
 
 # --- Schedule selection ---
